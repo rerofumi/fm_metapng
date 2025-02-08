@@ -31,6 +31,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("Positive prompt:");
             println!("{}", prompt);
             displayed = true;
+        } else if text.keyword == "Comment" {
+            println!("{}", text.text);
+            displayed = true;
         }
     }
     if !displayed {
