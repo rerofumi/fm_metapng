@@ -29,12 +29,45 @@ jobs:
       - name: Build
         run: cargo build --target ${{ matrix.target }} --release
 
-      - name: Upload Release Asset
+      - name: Zip artifact (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          tar -czvf fm_metapng-${{ matrix.target }}.tar.gz -C target/${{ matrix.target }}/release fm_metapng README.md
+
+      - name: Zip artifact (Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          powershell Compress-Archive -Path "target/${{ matrix.target }}/release/fm_metapng.exe,README.md" -DestinationPath fm_metapng-${{ matrix.target }}.zip
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ github.event.release.upload_url }} # This pulls from the CREATE RELEASE action
-          asset_path: target/${{ matrix.target }}/release/fm_metapng
-          asset_name: fm_metapng-${{ matrix.target }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: fm_metapng-${{ matrix.target }}.tar.gz
+          asset_name: fm_metapng-${{ matrix.target }}.tar.gz
+          asset_content_type: application/octet-stream
+
+      - name: Upload Release Asset (Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: fm_metapng-${{ matrix.target }}.zip
+          asset_name: fm_metapng-${{ matrix.target }}.zip
           asset_content_type: application/octet-stream
