@@ -32,11 +32,13 @@ jobs:
       - name: Zip artifact (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
+          cp README.md target/${{ matrix.target }}/release
           tar -czvf fm_metapng-${{ matrix.target }}.tar.gz -C target/${{ matrix.target }}/release fm_metapng README.md
 
       - name: Zip artifact (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
+          powershell Copy-Item -Path README.md -Destination target/${{ matrix.target }}/release/
           powershell Compress-Archive -Path "target/${{ matrix.target }}/release/fm_metapng.exe,README.md" -DestinationPath fm_metapng-${{ matrix.target }}.zip
 
       - name: Create Release
