@@ -28,7 +28,7 @@ jobs:
           mkdir artifact
           echo $url > artifact/url.txt
       - name: Upload artifact to share url with other jobs
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: artifact
           path: artifact/url.txt
@@ -69,7 +69,7 @@ jobs:
           powershell Compress-Archive -Path "target/${{ matrix.target }}/release/fm_metapng.exe,README.md" -DestinationPath fm_metapng-${{ matrix.target }}.zip
 
       - name: Download artifact to get url to upload to release
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: artifact
     
