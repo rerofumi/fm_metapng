@@ -21,7 +21,18 @@ jobs:
           release_name: ${{ github.ref }}
           draft: false
           prerelease: false
-
+      - name: Get url to upload to release from output
+        env:
+          url: ${{ steps.create_release.outputs.upload_url }}
+        run: |
+          mkdir artifact
+          echo $url > artifact/url.txt
+      - name: Upload artifact to share url with other jobs
+        uses: actions/upload-artifact@v1
+        with:
+          name: artifact
+          path: artifact/url.txt
+    
   build:
     needs: setup-release    
     runs-on: ${{ matrix.os }}
@@ -34,6 +45,7 @@ jobs:
             target: x86_64-pc-windows-msvc
 
     steps:
+      - uses: actions/checkout@v3
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -56,12 +68,18 @@ jobs:
           powershell Copy-Item -Path README.md -Destination target/${{ matrix.target }}/release/
           powershell Compress-Archive -Path "target/${{ matrix.target }}/release/fm_metapng.exe,README.md" -DestinationPath fm_metapng-${{ matrix.target }}.zip
 
+      - name: Download artifact to get url to upload to release
+        uses: actions/download-artifact@v1
+        with:
+          name: artifact
+    
       - name: Get url to upload to release from artifact (linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         id: get_url
         run: |
           url=$(cat artifact/url.txt)
           echo "##[set-output name=upload_url;]$url"
+
       - name: Get url to upload to release from artifact (windows)
         if: ${{ matrix.os == 'windows-latest' }}
         id: get_url_windows
