@@ -72,7 +72,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: artifact
-          path: artifact/url.txt
+          path: artifact
 
       - name: Get url to upload to release from artifact (linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
