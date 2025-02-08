@@ -7,12 +7,12 @@ use std::fs::File;
 #[command(author, version, about, long_about = None)]
 struct Args {
     /// PNG file path
-    #[arg(short, long, required = true)]
     path: String,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let args = Args::parse();
+    let path = std::env::args().nth(1).expect("Please provide a path to the PNG file.");
+    let args = Args { path };
 
     let file = File::open(args.path)?;
     let decoder = Decoder::new(file);
