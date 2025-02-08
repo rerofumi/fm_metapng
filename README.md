@@ -1,5 +1,7 @@
 # fm_metapng
 
+日本語 | [English](README_en.md)
+
 fm_metapng は、PNG ファイル内に埋め込まれた生成 AI のプロンプト情報を抽出し、表示するツールです。  
 このリポジトリでは、実行時に PNG 内のテキストデータ（特に "parameters" キーワード）を解析し、プロンプト内容を表示します。
 
